@@ -1,118 +1,33 @@
-component output="false" {
+<cfcomponent extends="taffy.core.api">
+	<cfscript>
 
-	this.name = "cfml_lucee5_aplication_demo_" & hash( cgi.server_name, "MD5", "utf-8" );
-	this.locale = "en_US";
-	this.timezone = "America/New_York";
-	this.charset.web="UTF-8";
-	this.charset.resource="UTF-8";
-	this.compression = true;
-	this.applicationTimeout = createTimeSpan( 1, 0, 0, 0 );
-	this.sessionManagement = true;
-	this.sessionTimeout = createTimeSpan( 0, 0, 30, 0 );
-	this.sessionType = "j2ee";
-	this.sessionStorage = "cookie";
-	this.sessioncookie.httponly = true;
-	this.sessioncookie.secure = true;
-	this.loginStorage = "session";
-	this.clientManagement = true;
-	this.clientStorage = "cookie";
-	this.setClientCookies = true;
-	this.setDomainCookies = true;
-	this.scriptProtect = true;
+		this.mappings['/taffy'] = expandPath('./taffy');
+		this.mappings['/resources'] = expandPath('./resources');
+		
+		this.name = hash(getCurrentTemplatePath());
 
-	/**
-		@hint "Runs when an application times out or the server is shutting down."
-		@ApplicationScope "The application scope."
-	*/
-	public void function onApplicationEnd(struct ApplicationScope=structNew()) {
+		variables.framework = {};
+		variables.framework.debugKey = "debug";
+		variables.framework.reloadKey = "reload";
+		variables.framework.reloadPassword = "true";
+		variables.framework.serializer = "taffy.core.nativeJsonSerializer";
+		variables.framework.returnExceptionsAsJson = true;
+		variables.framework.allowCrossDomain = true;
+		variables.framework.reloadOnEveryRequest = true;
 
-		return;
-	}
-
-
-	/**
-		@hint "Runs when ColdFusion receives the first request for a page in the application."
-		@output "false"
-	*/
-	public void function onApplicationStart() {
-
-		return;
-	}
-
-
-	/**
-		@hint "Runs when a session ends."
-		@SessionScope "The Session scope"
-		@ApplicationScope "The Application scope"
-	*/
-	public void function onSessionEnd(required struct SessionScope, struct ApplicationScope=structNew()) {
-
-		return;
-	}
-
-
-	/**
-		@hint "Runs when a session starts."
-	*/
-	public void function onSessionStart() {
-
-		return;
-	}
-
-
-	/**
-		@hint "Runs at the end of a request, after all other CFML code."
-	*/
-	public void function onRequestEnd() {
-
-		return;
-	}
-
-
-	/**
-		@hint "Runs when a request starts."
-		@TargetPage "Path from the web root to the requested page."
-	*/
-	public boolean function onRequestStart(required string TargetPage) {
-
-		return true;
-	}
-
-
-
-	/**
-		@hint "Runs when a request specifies a non-existent CFML page."
-		@TargetPage "The path from the web root to the requested CFML page."
-	*/
-	public boolean function onMissingTemplate(required string TargetPage) {
-		var pageRequested = trim(arguments.targetPage);
-
-		return false;
-	}
-
-
-	/**
-		@hint "Runs when an uncaught exception occurs in the application."
-		@Exception "The ColdFusion Exception object. For information on the structure of this object, see the description of the cfcatch variable in the cfcatch description."
-		@EventName "The name of the event handler that generated the exception. If the error occurs during request processing and you do not implement an onRequest method, EventName is the empty string."
-	*/
-	public void function onError(required any Exception, required string EventName) {
-
-			savecontent variable="errorOutput" {
-				writeOutput( "#cgi.request_url#<br><br>" );
-				dump( var="#arguments.eventname#",label="Event Name",format="html" );
-				dump( var="#arguments.exception#",label="Exception",format="html" );
-				dump( var="#client#",label="Client",format="html" );
-				dump( var="#session#",label="Session",format="html" );
-				dump( var="#request#",label="Request",format="html" );
-				dump( var="#form#",label="Form",format="html" );
-				dump( var="#url#",label="URL",format="html" );
-				dump( var="#cgi#",label="CGI",format="html" );
-			}
-
-			writeOutput( errorOutput );
-
-			return;
+		function onApplicationStart(){
+			return super.onApplicationStart();
 		}
 
-}
+		function onRequestStart(TARGETPATH){
+			return super.onRequestStart(TARGETPATH);
+		}
+
+		// this function is called after the request has been parsed and all request details are known
+		function onTaffyRequest(verb, cfc, requestArguments, mimeExt){
+			// this would be a good place for you to check API key validity and other non-resource-specific validation
+			return true;
+		}
+
+	</cfscript>
+</cfcomponent>
