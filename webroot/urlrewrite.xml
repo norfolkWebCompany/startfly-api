@@ -9,7 +9,7 @@
         <set type="status">404</set>
     </rule>
 
-    <rule enabled="false">
+    <rule enabled="true">
         <note>search engine friendly urls for cf frameworks</note>
         <condition type="request-filename" operator="notfile" />
         <from>^(.*)$</from>
